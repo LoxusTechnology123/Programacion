@@ -1,0 +1,135 @@
+Codigo Login 
+
+Imports MySql.Data.MySqlClient
+Public Class Login
+    Dim MysqlConn As MySqlConnection
+    Dim command As MySqlCommand
+    Private Sub GunaAdvenceButton1_Click(sender As Object, e As EventArgs) Handles GunaAdvenceButton1.Click
+        MysqlConn = New MySqlConnection
+        MysqlConn.ConnectionString = "server=localhost; userid=root; password=; database=MyCompany"
+        Dim reader As MySqlDataReader
+
+        Try
+            MysqlConn.Open()
+            Dim Query As String
+            Query = "select * from pacientes where nombre_usuario='" & TXTUsuario.Text & "'and contraseña='" & TXTContraseña.Text & "'"
+            command = New MySqlCommand(Query, MysqlConn)
+            reader = command.ExecuteReader
+            Dim count As Integer
+            While reader.Read
+                count = count + 1
+            End While
+            If count = 1 Then
+                MessageBox.Show("Login Correcto")
+                InterfazMedico.Show()
+            Else
+                MessageBox.Show("Contraseña o Usuario Incorrectos")
+                TXTContraseña.Text = ""
+                TXTContraseña.Focus()
+            End If
+            MysqlConn.Close()
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+        Finally
+            MysqlConn.Dispose()
+        End Try
+    End Sub
+
+    Private Sub GunaAdvenceButton2_Click(sender As Object, e As EventArgs) Handles GunaAdvenceButton2.Click
+        Application.Exit()
+    End Sub
+
+    Private Sub GunaLinkLabel1_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles GunaLinkLabel1.LinkClicked
+        Registro.Show()
+    End Sub
+End Class
+
+Codigo Registro
+
+Imports MySql.Data.MySqlClient
+Public Class Registro
+    Dim MysqlConn As MySqlConnection
+    Dim command As MySqlCommand
+    Dim datos As DataSet
+    Dim adaptador As MySqlDataAdapter
+    Private Sub GunaAdvenceButton1_Click(sender As Object, e As EventArgs) Handles BRNAtras.Click
+        Me.Close()
+    End Sub
+
+    Private Sub GunaAdvenceButton2_Click(sender As Object, e As EventArgs) Handles BTNCerrarRegistro.Click
+        Me.Close()
+    End Sub
+
+    Private Sub BTNRegistrarse_Click(sender As Object, e As EventArgs) Handles BTNRegistrarse.Click
+        MysqlConn = New MySqlConnection
+        MysqlConn.ConnectionString = "server=localhost; userid=root; password=; database=MyCompany"
+        Call registrar()
+    End Sub
+    Private Sub registrar()
+        If MysqlConn.State = ConnectionState.Closed Then
+            MysqlConn.Open()
+        End If
+        Dim command As New MySqlCommand("insert into pacientes(Nombre, Apellido, Nombre_Usuario, Contraseña, Email)values
+        ('" & Me.TXTNombre.Text & "','" & Me.TXTApellido.Text & "','" & Me.TXTNombreUsuario.Text & "','" & Me.TXTContraseñaIngresar.Text & "','" & Me.TXTEmail.Text & "')", MysqlConn)
+        command.ExecuteNonQuery()
+        MsgBox("Usuario registrado correctamente", MsgBoxStyle.Information, "Confirmar")
+        If MysqlConn.State = ConnectionState.Open Then
+            MysqlConn.Close()
+        End If
+    End Sub
+
+    Private Sub Registro_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+    End Sub
+    Private Sub llenarcombo()
+        Try
+            MysqlConn = New MySqlConnection
+            MysqlConn.ConnectionString = "server=localhost; userid=root; password=; database=MyCompany"
+            MysqlConn.Open()
+            Dim consulta As String
+            consulta = "select * from especialidades"
+            adaptador = New MySqlDataAdapter(consulta, MysqlConn)
+            datos = New DataSet
+            datos.Tables.Add("especialidades")
+            adaptador.Fill(datos.Tables("especialidades"))
+            Comboespe.DataSource = datos.Tables("especialidades")
+            Comboespe.DisplayMember = "Especialidad"
+            MysqlConn.Close()
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+    End Sub
+End Class
+
+Codigo Interfaz
+
+Imports MySql.Data.MySqlClient
+Public Class InterfazMedico
+    Dim MysqlConn As MySqlConnection
+    Dim datos As DataSet
+    Dim adaptador As MySqlDataAdapter
+    Private Sub InterfazUsuario_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+    End Sub
+
+
+    Private Sub GunaAdvenceButton5_Click(sender As Object, e As EventArgs)
+    End Sub
+
+
+    Private Sub GunaAdvenceButton2_Click(sender As Object, e As EventArgs) Handles BTNChat.Click
+    End Sub
+
+    Private Sub BTNActividad_Click(sender As Object, e As EventArgs)
+    End Sub
+
+    Private Sub BTNPatologias_Click(sender As Object, e As EventArgs)
+    End Sub
+
+    Private Sub GunaLabel15_Click(sender As Object, e As EventArgs) Handles GunaLabel15.Click
+
+    End Sub
+
+    Private Sub Panelcontenedor_Paint(sender As Object, e As PaintEventArgs) Handles Panelcontenedor.Paint
+
+    End Sub
+End Class
